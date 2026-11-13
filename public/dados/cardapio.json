@@ -1,0 +1,166 @@
+
+[
+  {
+    "id": "coxinha",
+    "nome": "Coxinha de Frango",
+    "categoria": "salgado",
+    "preco": 700,
+    "disponivel": true,
+    "descricao": "Coxinha crocante recheada com frango temperado e desfiado.",
+    "adicionais": [
+      { "id": "catupiry", "nome": "Catupiry", "preco": 200 },
+      { "id": "cheddar", "nome": "Cheddar", "preco": 200 }
+    ]
+  },
+  {
+    "id": "pastel-carne",
+    "nome": "Pastel de Carne",
+    "categoria": "salgado",
+    "preco": 800,
+    "disponivel": true,
+    "descricao": "Pastel frito com recheio de carne moída temperada.",
+    "adicionais": [
+      { "id": "queijo-pastel", "nome": "Queijo", "preco": 200 }
+    ]
+  },
+  {
+    "id": "empada-frango",
+    "nome": "Empada de Frango",
+    "categoria": "salgado",
+    "preco": 650,
+    "disponivel": true,
+    "descricao": "Empada de massa amanteigada com recheio cremoso de frango.",
+    "adicionais": []
+  },
+  {
+    "id": "enroladinho",
+    "nome": "Enroladinho de Salsicha",
+    "categoria": "salgado",
+    "preco": 600,
+    "disponivel": false,
+    "descricao": "Massa macia assada com recheio de salsicha.",
+    "adicionais": []
+  },
+  {
+    "id": "agua",
+    "nome": "Água Mineral",
+    "categoria": "bebida",
+    "preco": 300,
+    "disponivel": true,
+    "descricao": "Garrafa de água mineral sem gás de 500 ml.",
+    "adicionais": []
+  },
+  {
+    "id": "suco-laranja",
+    "nome": "Suco de Laranja",
+    "categoria": "bebida",
+    "preco": 600,
+    "disponivel": true,
+    "descricao": "Suco de laranja gelado de 300 ml.",
+    "adicionais": [
+      { "id": "gelo", "nome": "Gelo extra", "preco": 0 }
+    ]
+  },
+  {
+    "id": "refrigerante",
+    "nome": "Refrigerante",
+    "categoria": "bebida",
+    "preco": 500,
+    "disponivel": true,
+    "descricao": "Lata de refrigerante de 350 ml.",
+    "adicionais": []
+  },
+  {
+    "id": "cafe",
+    "nome": "Café",
+    "categoria": "bebida",
+    "preco": 350,
+    "disponivel": true,
+    "descricao": "Café quentinho preparado na hora.",
+    "adicionais": [
+      { "id": "leite", "nome": "Leite", "preco": 100 },
+      { "id": "acucar", "nome": "Açúcar extra", "preco": 0 }
+    ]
+  },
+  {
+    "id": "brigadeiro",
+    "nome": "Brigadeiro",
+    "categoria": "doce",
+    "preco": 300,
+    "disponivel": true,
+    "descricao": "Doce tradicional de chocolate com granulado.",
+    "adicionais": []
+  },
+  {
+    "id": "bolo-chocolate",
+    "nome": "Fatia de Bolo de Chocolate",
+    "categoria": "doce",
+    "preco": 700,
+    "disponivel": true,
+    "descricao": "Fatia de bolo fofinho com cobertura de chocolate.",
+    "adicionais": [
+      { "id": "calda-chocolate", "nome": "Calda extra", "preco": 150 }
+    ]
+  },
+  {
+    "id": "pudim",
+    "nome": "Pudim",
+    "categoria": "doce",
+    "preco": 550,
+    "disponivel": true,
+    "descricao": "Pudim de leite condensado com calda de caramelo.",
+    "adicionais": []
+  },
+  {
+    "id": "salada-frutas",
+    "nome": "Salada de Frutas",
+    "categoria": "doce",
+    "preco": 650,
+    "disponivel": false,
+    "descricao": "Mix de frutas frescas da estação.",
+    "adicionais": [
+      { "id": "granola", "nome": "Granola", "preco": 150 }
+    ]
+  },
+  {
+    "id": "prato-feito",
+    "nome": "Prato Feito",
+    "categoria": "refeicao",
+    "preco": 1800,
+    "disponivel": true,
+    "descricao": "Arroz, feijão, carne grelhada e salada.",
+    "adicionais": [
+      { "id": "ovo", "nome": "Ovo frito", "preco": 300 },
+      { "id": "batata", "nome": "Batata frita", "preco": 400 }
+    ]
+  },
+  {
+    "id": "frango-grelhado",
+    "nome": "Frango Grelhado",
+    "categoria": "refeicao",
+    "preco": 1600,
+    "disponivel": true,
+    "descricao": "Filé de frango grelhado acompanhado de arroz e legumes.",
+    "adicionais": [
+      { "id": "feijao-extra", "nome": "Feijão extra", "preco": 250 }
+    ]
+  },
+  {
+    "id": "macarronada",
+    "nome": "Macarronada",
+    "categoria": "refeicao",
+    "preco": 1700,
+    "disponivel": true,
+    "descricao": "Macarrão com molho de tomate e carne moída.",
+    "adicionais": []
+  },
+  {
+    "id": "lasanha",
+    "nome": "Lasanha",
+    "categoria": "refeicao",
+    "preco": 1900,
+    "disponivel": true,
+    "descricao": "Lasanha de presunto e queijo com molho caseiro.",
+    "adicionais": []
+  }
+]
