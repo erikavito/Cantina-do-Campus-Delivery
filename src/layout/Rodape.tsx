@@ -1,13 +1,19 @@
 
 export function Rodape() {
   return (
-    <footer>
-      <p>
-        © {new Date().getFullYear()} Cantina do Campus Delivery.
-        Todos os direitos reservados.
-      </p>
+    <footer className="rodape">
+      <div className="rodape-conteudo">
+        <h2>Cantina do Campus</h2>
 
-      <p>Feito com carinho para a comunidade acadêmica.</p>
+        <p>
+          Comida boa pertinho de você!
+        </p>
+
+        <p>
+          © {new Date().getFullYear()} Cantina do Campus Delivery.
+          Todos os direitos reservados.
+        </p>
+      </div>
     </footer>
   );
 }
