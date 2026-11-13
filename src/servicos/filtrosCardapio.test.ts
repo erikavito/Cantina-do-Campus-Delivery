@@ -94,4 +94,55 @@ describe('Filtros e ordenação do cardápio', () => {
 
     expect(resultado).toHaveLength(0);
   });
+
+    it('deve pesquisar sem diferenciar letras maiúsculas e minúsculas', () => {
+    const resultado = filtrarEOrdenarItens(
+      produtos, 'COXINHA', 'todas', 'nome'
+    );
+
+    expect(resultado).toHaveLength(1);
+    expect(resultado[0].id).toBe('coxinha');
+  });
+
+  it('deve encontrar produtos usando apenas parte do nome', () => {
+    const resultado = filtrarEOrdenarItens(
+      produtos, 'chocolate', 'todas', 'nome'
+    );
+
+    expect(resultado).toHaveLength(1);
+    expect(resultado[0].id).toBe('bolo');
+  });
+
+  it('deve combinar pesquisa por nome e categoria', () => {
+    const resultado = filtrarEOrdenarItens(
+      produtos, 'água', 'bebida', 'nome'
+    );
+
+    expect(resultado).toHaveLength(1);
+    expect(resultado[0].id).toBe('agua');
+  });
+
+  it('deve ordenar os produtos por nome em ordem alfabética', () => {
+    const resultado = filtrarEOrdenarItens(
+      produtos, '', 'todas', 'nome'
+    );
+
+    expect(resultado.map((item) => item.nome)).toEqual([
+      'Água Mineral',
+      'Bolo de Chocolate',
+      'Coxinha de Frango',
+    ]);
+  });
+
+  it('não deve alterar a lista original ao ordenar', () => {
+    filtrarEOrdenarItens(
+      produtos, '', 'todas', 'maior-preco'
+    );
+
+    expect(produtos.map((item) => item.id)).toEqual([
+      'coxinha',
+      'agua',
+      'bolo',
+    ]);
+  });
 });
