@@ -12,7 +12,6 @@ import { Carregando } from '../componentes/Carregando';
 import { Erro } from '../componentes/Erro';
 import { EstadoVazio } from '../componentes/EstadoVazio';
 
-
 export function Cardapio() {
   const [itens, setItens] = useState<ItemCardapio[]>([]);
   const [carregando, setCarregando] = useState(true);
@@ -45,12 +44,13 @@ export function Cardapio() {
     carregarCardapio();
   }, [carregarCardapio]);
 
- const itensFiltrados = filtrarEOrdenarItens(
-  itens,
-  busca,
-  categoria,
-  ordenacao
-);
+  const itensFiltrados = filtrarEOrdenarItens(
+    itens,
+    busca,
+    categoria,
+    ordenacao
+  );
+
   if (carregando) {
     return <Carregando mensagem="Carregando cardápio..." />;
   }
@@ -117,7 +117,15 @@ export function Cardapio() {
               <p>{formatarPreco(item.preco)}</p>
 
               {!item.disponivel && (
-                <p>Produto indisponível no momento.</p>
+                <div>
+                  <p role="status">
+                    Produto indisponível no momento.
+                  </p>
+
+                  <button type="button" disabled>
+                    Indisponível
+                  </button>
+                </div>
               )}
             </article>
           ))}
