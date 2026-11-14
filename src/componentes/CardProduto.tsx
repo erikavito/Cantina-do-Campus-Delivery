@@ -42,11 +42,9 @@ export function CardProduto({ item }: CardProdutoProps) {
     <article className="card-produto">
       <h3>{item.nome}</h3>
 
-      <p>{item.descricao}</p>
+      <p className="card-descricao">{item.descricao}</p>
 
-      <p>
-        Preço: <strong>{formatarPreco(precoUnitario)}</strong>
-      </p>
+      <p className="card-preco">{formatarPreco(precoUnitario)}</p>
 
       {item.disponivel ? (
         <>
@@ -57,51 +55,72 @@ export function CardProduto({ item }: CardProdutoProps) {
             aoAlterar={setAdicionaisIds}
           />
 
-          <label htmlFor={`quantidade-${item.id}`}>
-            Quantidade:
-          </label>
+          <div className="campo-card">
+            <span className="rotulo-card" id={`rotulo-qtd-${item.id}`}>
+              Quantidade
+            </span>
 
-          <input
-            id={`quantidade-${item.id}`}
-            type="number"
-            min="1"
-            max="99"
-            value={quantidade}
-            onChange={(evento) => {
-              const valor = Number(evento.target.value);
+            <div
+              className="seletor-quantidade"
+              role="group"
+              aria-labelledby={`rotulo-qtd-${item.id}`}
+            >
+              <button
+                type="button"
+                className="botao-quantidade"
+                aria-label={`Diminuir quantidade de ${item.nome}`}
+                disabled={quantidade <= 1}
+                onClick={() => setQuantidade(quantidade - 1)}
+              >
+                −
+              </button>
 
-              if (
-                Number.isInteger(valor) &&
-                valor >= 1 &&
-                valor <= 99
-              ) {
-                setQuantidade(valor);
-              }
-            }}
-          />
+              <output aria-live="polite">{quantidade}</output>
 
-          <label htmlFor={`observacao-${item.id}`}>
-            Observações:
-          </label>
+              <button
+                type="button"
+                className="botao-quantidade"
+                aria-label={`Aumentar quantidade de ${item.nome}`}
+                disabled={quantidade >= 99}
+                onClick={() => setQuantidade(quantidade + 1)}
+              >
+                +
+              </button>
+            </div>
+          </div>
 
-          <textarea
-            id={`observacao-${item.id}`}
-            maxLength={120}
-            value={observacao}
-            onChange={(evento) => setObservacao(evento.target.value)}
-            placeholder="Ex.: sem cebola"
-          />
+          <div className="campo-card">
+            <label
+              className="rotulo-card"
+              htmlFor={`observacao-${item.id}`}
+            >
+              Observações
+            </label>
 
-          <button type="button" onClick={adicionarAoCarrinho}>
+            <textarea
+              id={`observacao-${item.id}`}
+              maxLength={120}
+              rows={2}
+              value={observacao}
+              onChange={(evento) => setObservacao(evento.target.value)}
+              placeholder="Ex.: sem cebola"
+            />
+          </div>
+
+          <button
+            type="button"
+            className="botao-adicionar"
+            onClick={adicionarAoCarrinho}
+          >
             Adicionar ao carrinho
           </button>
 
-          <p role="status" aria-live="polite">
+          <p className="card-mensagem" role="status" aria-live="polite">
             {mensagem}
           </p>
         </>
       ) : (
-        <button type="button" disabled>
+        <button type="button" className="botao-adicionar" disabled>
           Produto indisponível
         </button>
       )}

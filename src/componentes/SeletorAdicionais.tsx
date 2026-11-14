@@ -24,14 +24,14 @@ export function SeletorAdicionais({
   if (adicionais.length === 0) return null;
 
   return (
-    <fieldset>
+    <fieldset className="adicionais">
       <legend>Escolha seus adicionais</legend>
 
       {adicionais.map((adicional) => {
         const idCampo = `${idBase}-${adicional.id}`;
 
         return (
-          <div key={adicional.id}>
+          <div key={adicional.id} className="adicional">
             <input
               id={idCampo}
               type="checkbox"

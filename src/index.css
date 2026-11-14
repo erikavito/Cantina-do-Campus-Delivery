@@ -305,3 +305,119 @@ button:disabled {
   transform: none;
 }
 
+/* ===== Card de produto: formulário interno ===== */
+.card-produto {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-produto .card-descricao {
+  color: #5a5a5a;
+  font-size: 15px;
+  flex-grow: 1;
+}
+
+.card-produto .card-preco {
+  color: var(--verde);
+  font-size: 20px;
+  font-weight: bold;
+  margin: 4px 0 12px;
+}
+
+.card-produto .adicionais {
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 0 0 14px;
+  background: #fffdf9;
+}
+
+.card-produto .adicionais legend {
+  padding: 0 6px;
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--verde-escuro);
+}
+
+.card-produto .adicional {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 14px;
+}
+
+.card-produto .adicional input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--verde);
+  cursor: pointer;
+}
+
+.card-produto .adicional label {
+  cursor: pointer;
+}
+
+.card-produto .campo-card {
+  margin-bottom: 14px;
+}
+
+.card-produto .rotulo-card {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--verde-escuro);
+}
+
+.card-produto textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  background: var(--branco);
+  color: var(--texto);
+  resize: vertical;
+}
+
+.card-produto textarea:focus {
+  outline: 2px solid var(--laranja);
+  border-color: var(--laranja);
+}
+
+.seletor-quantidade {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--branco);
+}
+
+.seletor-quantidade output {
+  min-width: 44px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.card-produto .botao-quantidade {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 0;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.card-produto .botao-adicionar {
+  width: 100%;
+  padding: 12px 18px;
+}
+
+.card-produto .card-mensagem {
+  min-height: 20px;
+  margin: 10px 0 0;
+  font-size: 14px;
+  font-weight: normal;
+  color: var(--verde);
+}
