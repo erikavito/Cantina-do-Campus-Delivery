@@ -1,36 +1,30 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import './Carrinho.css';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import type { ItemCardapio } from "../tipos";
+import { useCarrinho } from "../contexto/CarrinhoContext";
+import { calcularResumoCarrinho } from "../dominio/carrinhoReducer";
+import { buscarCardapio } from "../servicos/cardapio";
+import { formatarPreco } from "../servicos/formatacao";
 
-import type { ItemCardapio } from '../tipos';
-import { useCarrinho } from '../contexto/CarrinhoContext';
-import {
-  calcularResumoCarrinho,
-} from '../dominio/carrinhoReducer';
-import { buscarCardapio } from '../servicos/cardapio';
-import { formatarPreco } from '../servicos/formatacao';
-
-import { ItemCarrinho } from '../componentes/ItemCarrinho';
-import { Carregando } from '../componentes/Carregando';
-import { Erro } from '../componentes/Erro';
-import { EstadoVazio } from '../componentes/EstadoVazio';
+import { ItemCarrinho } from "../componentes/ItemCarrinho";
+import { Carregando } from "../componentes/Carregando";
+import { Erro } from "../componentes/Erro";
+import { EstadoVazio } from "../componentes/EstadoVazio";
 
 export function Carrinho() {
-  const {
-    linhas,
-    quantidadeItens,
-    removerItem,
-    limparCarrinho,
-  } = useCarrinho();
+  const { linhas, quantidadeItens, removerItem, limparCarrinho } =
+    useCarrinho();
 
   const [catalogo, setCatalogo] = useState<ItemCardapio[]>([]);
   const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState('');
+  const [erro, setErro] = useState("");
 
   const carregarCatalogo = useCallback(async () => {
     try {
       setCarregando(true);
-      setErro('');
+      setErro("");
 
       const dados = await buscarCardapio();
       setCatalogo(dados);
@@ -38,7 +32,7 @@ export function Carrinho() {
       setErro(
         erro instanceof Error
           ? erro.message
-          : 'Não foi possível carregar os produtos.'
+          : "Não foi possível carregar os produtos.",
       );
     } finally {
       setCarregando(false);
@@ -51,12 +45,12 @@ export function Carrinho() {
 
   const produtosPorId = useMemo(
     () => new Map(catalogo.map((produto) => [produto.id, produto])),
-    [catalogo]
+    [catalogo],
   );
 
   const resumo = useMemo(
     () => calcularResumoCarrinho(linhas, catalogo),
-    [linhas, catalogo]
+    [linhas, catalogo],
   );
 
   if (carregando) {
@@ -64,12 +58,7 @@ export function Carrinho() {
   }
 
   if (erro) {
-    return (
-      <Erro
-        mensagem={erro}
-        aoTentarNovamente={carregarCatalogo}
-      />
-    );
+    return <Erro mensagem={erro} aoTentarNovamente={carregarCatalogo} />;
   }
 
   return (
@@ -85,8 +74,8 @@ export function Carrinho() {
       ) : (
         <>
           <p>
-            Você possui {quantidadeItens}{' '}
-            {quantidadeItens === 1 ? 'item' : 'itens'} no carrinho.
+            Você possui {quantidadeItens}{" "}
+            {quantidadeItens === 1 ? "item" : "itens"} no carrinho.
           </p>
 
           <div className="lista-carrinho">
@@ -97,14 +86,10 @@ export function Carrinho() {
                 return (
                   <article key={`${linha.itemId}-${indice}`}>
                     <p>
-                      Um produto deste carrinho não foi encontrado
-                      no catálogo.
+                      Um produto deste carrinho não foi encontrado no catálogo.
                     </p>
 
-                    <button
-                      type="button"
-                      onClick={() => removerItem(indice)}
-                    >
+                    <button type="button" onClick={() => removerItem(indice)}>
                       Remover item
                     </button>
                   </article>
@@ -125,24 +110,21 @@ export function Carrinho() {
           <div className="resumo-carrinho">
             <h3>Resumo do pedido</h3>
 
+            <p>Quantidade de itens: {resumo.quantidadeItens}</p>
+
             <p>
-              Quantidade de itens: {resumo.quantidadeItens}
+              Subtotal: <strong>{formatarPreco(resumo.subtotal)}</strong>
             </p>
 
             <p>
-              Subtotal:{' '}
-              <strong>{formatarPreco(resumo.subtotal)}</strong>
+              Taxa de entrega e descontos serão calculados durante o checkout.
             </p>
 
-            <p>
-              Taxa de entrega e descontos serão calculados
-              durante o checkout.
-            </p>
+            <Link to="/checkout" className="botao-finalizar">
+              Finalizar pedido
+            </Link>
 
-            <button
-              type="button"
-              onClick={limparCarrinho}
-            >
+            <button type="button" onClick={limparCarrinho}>
               Limpar carrinho
             </button>
 
