@@ -1,4 +1,4 @@
-
+import { CardProduto } from '../componentes/CardProduto';
 import { useCallback, useEffect, useState } from 'react';
 import type { ItemCardapio } from '../tipos';
 import {
@@ -7,7 +7,6 @@ import {
   type Ordenacao,
 } from '../servicos/filtrosCardapio';
 import { buscarCardapio } from '../servicos/cardapio';
-import { formatarPreco } from '../servicos/formatacao';
 import { Carregando } from '../componentes/Carregando';
 import { Erro } from '../componentes/Erro';
 import { EstadoVazio } from '../componentes/EstadoVazio';
@@ -110,26 +109,10 @@ export function Cardapio() {
         <EstadoVazio mensagem="Nenhum produto encontrado." />
       ) : (
         <div>
-          {itensFiltrados.map((item) => (
-            <article key={item.id}>
-              <h3>{item.nome}</h3>
-              <p>{item.descricao}</p>
-              <p>{formatarPreco(item.preco)}</p>
-
-              {!item.disponivel && (
-                <div>
-                  <p role="status">
-                    Produto indisponível no momento.
-                  </p>
-
-                  <button type="button" disabled>
-                    Indisponível
-                  </button>
-                </div>
-              )}
-            </article>
-          ))}
-        </div>
+  {itensFiltrados.map((item) => (
+    <CardProduto key={item.id} item={item} />
+  ))}
+</div>
       )}
     </section>
   );

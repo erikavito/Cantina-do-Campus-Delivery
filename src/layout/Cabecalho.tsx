@@ -1,7 +1,9 @@
-
 import { Link } from 'react-router-dom';
+import { useCarrinho } from '../contexto/CarrinhoContext';
 
 export function Cabecalho() {
+  const { quantidadeItens } = useCarrinho();
+
   return (
     <header className="cabecalho">
       <div className="cabecalho-conteudo">
@@ -12,9 +14,19 @@ export function Cabecalho() {
 
         <nav aria-label="Navegação principal">
           <ul className="menu-navegacao">
-            <li><Link to="/">Cardápio</Link></li>
-            <li><Link to="/carrinho">Carrinho</Link></li>
-            <li><Link to="/pedidos">Meus pedidos</Link></li>
+            <li>
+              <Link to="/">Cardápio</Link>
+            </li>
+
+            <li>
+              <Link to="/carrinho">
+                Carrinho ({quantidadeItens})
+              </Link>
+            </li>
+
+            <li>
+              <Link to="/pedidos">Meus pedidos</Link>
+            </li>
           </ul>
         </nav>
       </div>
