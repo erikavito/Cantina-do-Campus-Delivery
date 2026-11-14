@@ -112,31 +112,33 @@ export function etapaDoCampo(campo: CampoCheckout): number {
 /* Valores do pedido                                                   */
 /* ------------------------------------------------------------------ */
 
-/**
- * Calcula os valores do pedido a partir do subtotal do carrinho.
- * O desconto de combo fica em 0 até a regra do combo ser definida
- * (parte do cálculo de valores do carrinho).
- */
+/** Frete grátis a partir deste valor em produtos, em centavos. */
+export const FRETE_GRATIS_A_PARTIR_DE = 5000;
+
 export function calcularValores(
   subtotal: number,
   tipoEntrega: TipoEntrega,
-  pagamento: FormaPagamento | ''
+  pagamento: FormaPagamento | '',
+  descontoCombo = 0
 ): ResumoValores {
-  const descontoCombo = 0;
+  const valorProdutos = subtotal - descontoCombo;
 
   const descontoPix =
     pagamento === 'pix'
-      ? Math.round((subtotal * DESCONTO_PIX_PERCENTUAL) / 100)
+      ? Math.round((valorProdutos * DESCONTO_PIX_PERCENTUAL) / 100)
       : 0;
 
-  const taxaEntrega = tipoEntrega === 'entrega' ? TAXA_ENTREGA : 0;
+  const taxaEntrega =
+    tipoEntrega === 'entrega' && valorProdutos < FRETE_GRATIS_A_PARTIR_DE
+      ? TAXA_ENTREGA
+      : 0;
 
   return {
     subtotal,
     descontoCombo,
     descontoPix,
     taxaEntrega,
-    total: subtotal - descontoCombo - descontoPix + taxaEntrega,
+    total: valorProdutos - descontoPix + taxaEntrega,
   };
 }
 
@@ -173,7 +175,7 @@ export function validarTelefone(telefone: string): string | null {
 export function validarCep(cep: string): string | null {
   return apenasDigitos(cep).length === 8
     ? null
-    : 'O CEP deve ter exatamente 8 números.';
+    : 'O CEP deve ter 8 dígitos';
 }
 
 /** Só entregamos em Balsas, MA. */
@@ -186,13 +188,13 @@ export function validarCidadeEUf(
   if (cidade.trim() === '') {
     erros.cidade = 'Informe a cidade.';
   } else if (!cidadeEhBalsas(cidade)) {
-    erros.cidade = 'Entregamos apenas em Balsas.';
+    erros.cidade = 'Entregamos apenas em Balsas-MA';
   }
 
   if (uf.trim() === '') {
     erros.uf = 'Informe o estado (UF).';
   } else if (uf.trim().toUpperCase() !== UF_ATENDIDA) {
-    erros.uf = `Entregamos apenas em Balsas, ${UF_ATENDIDA}.`;
+    erros.uf = 'Entregamos apenas em Balsas-MA';
   }
 
   return erros;
@@ -220,9 +222,9 @@ export function validarEntrega(
   const erros: ErrosCheckout = {};
 
   if (subtotal < PEDIDO_MINIMO_ENTREGA) {
-    erros.tipoEntrega = `O pedido mínimo para entrega é ${formatarPreco(
+    erros.tipoEntrega = `Pedido mínimo para entrega: ${formatarPreco(
       PEDIDO_MINIMO_ENTREGA
-    )}. Adicione mais itens ou escolha retirada.`;
+    )}`;
   }
 
   const erroCep = validarCep(dados.cep);
@@ -237,7 +239,7 @@ export function validarEntrega(
   return erros;
 }
 
-/** Troco é opcional, mas se for informado precisa cobrir o total. */
+/** No dinheiro, "Troco para quanto?" é obrigatório e precisa cobrir o total. */
 export function validarPagamento(
   dados: DadosCheckout,
   total: number
@@ -249,15 +251,17 @@ export function validarPagamento(
     return erros;
   }
 
-  if (dados.pagamento === 'dinheiro' && dados.trocoPara.trim() !== '') {
-    const valor = reaisParaCentavos(dados.trocoPara);
+  if (dados.pagamento === 'dinheiro') {
+    if (dados.trocoPara.trim() === '') {
+      erros.trocoPara = 'Informe para quanto você precisa de troco.';
+    } else {
+      const valor = reaisParaCentavos(dados.trocoPara);
 
-    if (valor === null) {
-      erros.trocoPara = 'Informe um valor válido, por exemplo 50,00.';
-    } else if (valor < total) {
-      erros.trocoPara = `O valor para troco deve ser pelo menos ${formatarPreco(
-        total
-      )}, o total do pedido.`;
+      if (valor === null) {
+        erros.trocoPara = 'Informe um valor válido, por exemplo 50,00.';
+      } else if (valor < total) {
+        erros.trocoPara = 'O troco não cobre o total do pedido';
+      }
     }
   }
 

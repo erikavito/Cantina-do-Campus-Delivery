@@ -131,10 +131,6 @@ describe('Pagamento e troco', () => {
     ).toBeDefined();
   });
 
-  it('troco é opcional', () => {
-    expect(validarPagamento({ ...dinheiro, trocoPara: '' }, 2000)).toEqual({});
-  });
-
   it('recusa troco menor que o total', () => {
     expect(
       validarPagamento({ ...dinheiro, trocoPara: '10,00' }, 2000).trocoPara
@@ -257,5 +253,41 @@ describe('Máscara de telefone', () => {
     expect(formatarTelefone('99999999999')).toBe('(99) 99999-9999');
     expect(formatarTelefone('9935411234')).toBe('(99) 3541-1234');
     expect(formatarTelefone('99')).toBe('99');
+  });
+});
+
+describe('Cenários de aceitação (parte 3)', () => {
+  const dinheiro: DadosCheckout = { ...dadosCompletos, pagamento: 'dinheiro' };
+  const TOTAL_C05 = 5400; // 3 marmitas de R$ 18,00, frete grátis
+
+  it('C05: recusa troco que não cobre o total', () => {
+    const erros = validarPagamento({ ...dinheiro, trocoPara: '50' }, TOTAL_C05);
+
+    expect(erros.trocoPara).toBe('O troco não cobre o total do pedido');
+  });
+
+  it('C06: aceita troco para R$ 60 e o troco devolvido é R$ 6,00', () => {
+    const erros = validarPagamento({ ...dinheiro, trocoPara: '60' }, TOTAL_C05);
+
+    expect(erros).toEqual({});
+    expect(reaisParaCentavos('60')! - TOTAL_C05).toBe(600);
+  });
+
+  it('C05/C06: no dinheiro o troco é obrigatório', () => {
+    const erros = validarPagamento({ ...dinheiro, trocoPara: '' }, TOTAL_C05);
+
+    expect(erros.trocoPara).toBeDefined();
+  });
+
+  it('C07: entrega de R$ 9,50 em produtos é recusada pelo mínimo', () => {
+    const erros = validarEntrega(dadosCompletos, 700 + 250);
+
+    expect(erros.tipoEntrega?.replace(/\s/g, ' ')).toBe(
+      'Pedido mínimo para entrega: R$ 15,00'
+    );
+  });
+
+  it('C12: CEP com 5 dígitos é recusado', () => {
+    expect(validarCep('12345')).toBe('O CEP deve ter 8 dígitos');
   });
 });

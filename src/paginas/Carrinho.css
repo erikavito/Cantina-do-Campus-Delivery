@@ -1,0 +1,17 @@
+.botao-finalizar {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  border-radius: 8px;
+  background: #276749;
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.botao-finalizar:hover {
+  filter: brightness(1.1);
+}
