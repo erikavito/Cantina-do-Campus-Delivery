@@ -1,8 +1,10 @@
-
+import { Carrinho } from '../paginas/Carrinho';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { LayoutPrincipal } from '../layout/LayoutPrincipal';
 import { PaginaNaoEncontrada } from '../paginas/PaginaNaoEncontrada';
 import { Cardapio } from '../paginas/Cardapio';
+import { Acompanhamento } from '../paginas/Acompanhamento';
+import { MeusPedidos } from '../paginas/MeusPedidos';
 
 export function AppRotas() {
   return (
@@ -10,7 +12,9 @@ export function AppRotas() {
       <Routes>
         <Route element={<LayoutPrincipal />}>
           <Route path="/" element={<Cardapio />} />
-
+          <Route path="/carrinho" element={<Carrinho />} />
+          <Route path="/pedidos" element={<MeusPedidos />} />
+          <Route path="/pedidos/:numero" element={<Acompanhamento />} />
           <Route
             path="*"
             element={<PaginaNaoEncontrada />}
