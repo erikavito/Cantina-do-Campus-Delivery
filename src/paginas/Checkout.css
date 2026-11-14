@@ -125,3 +125,50 @@
 @media (max-width: 520px) {
   .etapa-nome { display: none; }
 }
+
+.troco-calculado {
+  margin: 0.25rem 0 1rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: #d6e8dc;
+  color: #1b4d33;
+}
+/* Resumo de valores (Subtotal, Desconto, Taxa, Total) */
+.pagina-checkout dl {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d5ddd7;
+  border-radius: 8px;
+  background: #fff;
+}
+.pagina-checkout dl > div,
+.pagina-checkout dl > dt,
+.pagina-checkout dl > dd {
+  margin: 0;
+}
+.pagina-checkout dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.3rem 0;
+}
+.pagina-checkout dt {
+  color: #3d4a41;
+}
+.pagina-checkout dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+}
+.resumo-total {
+  margin-top: 0.4rem;
+  padding-top: 0.6rem !important;
+  border-top: 2px solid #276749;
+  font-size: 1.1rem;
+  color: #1b4d33;
+}
+.resumo-total dt,
+.resumo-total dd {
+  color: #1b4d33;
+  font-weight: 700;
+}

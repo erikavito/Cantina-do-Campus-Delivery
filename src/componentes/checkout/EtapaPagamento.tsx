@@ -1,4 +1,5 @@
 import { DESCONTO_PIX_PERCENTUAL } from '../../dominio/checkout';
+import { reaisParaCentavos } from '../../dominio/mascaras';
 import { formatarPreco } from '../../servicos/formatacao';
 import { CampoTexto } from '../CampoTexto';
 import type { PropsEtapa } from './tiposEtapa';
@@ -13,6 +14,12 @@ export function EtapaPagamento({
   aoAlterar,
   total,
 }: EtapaPagamentoProps) {
+  const trocoPara = reaisParaCentavos(dados.trocoPara);
+  const trocoADevolver =
+    dados.pagamento === 'dinheiro' && trocoPara !== null && trocoPara >= total
+      ? trocoPara - total
+      : null;
+
   return (
     <>
       <fieldset className="grupo-opcoes">
@@ -29,8 +36,10 @@ export function EtapaPagamento({
             onChange={() => aoAlterar('pagamento', 'pix')}
           />
           <span>
-            <strong>Pix</strong>
-            <small>{DESCONTO_PIX_PERCENTUAL}% de desconto no subtotal.</small>
+            <strong>Pix</strong>{' '}
+            <small>
+              {DESCONTO_PIX_PERCENTUAL}% de desconto nos produtos.
+            </small>
           </span>
         </label>
 
@@ -54,8 +63,8 @@ export function EtapaPagamento({
             onChange={() => aoAlterar('pagamento', 'dinheiro')}
           />
           <span>
-            <strong>Dinheiro</strong>
-            <small>Você pode pedir troco.</small>
+            <strong>Dinheiro</strong>{' '}
+            <small>Informe para quanto precisa de troco.</small>
           </span>
         </label>
 
@@ -67,19 +76,25 @@ export function EtapaPagamento({
       </fieldset>
 
       {dados.pagamento === 'dinheiro' && (
-        <CampoTexto
-          nome="trocoPara"
-          rotulo="Troco para quanto?"
-          valor={dados.trocoPara}
-          aoAlterar={(valor) => aoAlterar('trocoPara', valor)}
-          erro={erros.trocoPara}
-          modoEntrada="decimal"
-          placeholder="Ex.: 50,00"
-          obrigatorio={false}
-          ajuda={`O total do pedido é ${formatarPreco(
-            total
-          )}. Deixe em branco se não precisar de troco.`}
-        />
+        <>
+          <CampoTexto
+            nome="trocoPara"
+            rotulo="Troco para quanto?"
+            valor={dados.trocoPara}
+            aoAlterar={(valor) => aoAlterar('trocoPara', valor)}
+            erro={erros.trocoPara}
+            modoEntrada="decimal"
+            placeholder="Ex.: 50,00"
+            obrigatorio
+            ajuda={`O total do pedido é ${formatarPreco(total)}.`}
+          />
+
+          {trocoADevolver !== null && (
+            <p className="troco-calculado" aria-live="polite">
+              Troco: <strong>{formatarPreco(trocoADevolver)}</strong>
+            </p>
+          )}
+        </>
       )}
     </>
   );
