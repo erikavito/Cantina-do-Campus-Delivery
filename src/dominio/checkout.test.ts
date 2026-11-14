@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
   DADOS_INICIAIS,
   DESCONTO_PIX_PERCENTUAL,
@@ -21,6 +21,10 @@ import {
   formatarTelefone,
   reaisParaCentavos,
 } from './mascaras';
+import {
+  buscarEnderecoPorCep,
+  precisaPreencherEnderecoManualmente,
+} from '../servicos/viacep';
 
 const SUBTOTAL_OK = PEDIDO_MINIMO_ENTREGA + 500;
 
@@ -187,6 +191,13 @@ describe('Valores do pedido', () => {
   it('não dá desconto fora do Pix', () => {
     expect(calcularValores(2000, 'retirada', 'dinheiro').descontoPix).toBe(0);
   });
+
+  it('frete grátis a partir de R$ 50,00 em produtos', () => {
+    expect(calcularValores(5000, 'entrega', 'cartao').taxaEntrega).toBe(0);
+    expect(calcularValores(4999, 'entrega', 'cartao').taxaEntrega).toBe(
+      TAXA_ENTREGA
+    );
+  });
 });
 
 describe('Foco no primeiro erro', () => {
@@ -260,6 +271,10 @@ describe('Cenários de aceitação (parte 3)', () => {
   const dinheiro: DadosCheckout = { ...dadosCompletos, pagamento: 'dinheiro' };
   const TOTAL_C05 = 5400; // 3 marmitas de R$ 18,00, frete grátis
 
+  it('C05: o total de 3 marmitas na entrega é R$ 54,00 (frete grátis)', () => {
+    expect(calcularValores(5400, 'entrega', 'dinheiro').total).toBe(TOTAL_C05);
+  });
+
   it('C05: recusa troco que não cobre o total', () => {
     const erros = validarPagamento({ ...dinheiro, trocoPara: '50' }, TOTAL_C05);
 
@@ -287,7 +302,56 @@ describe('Cenários de aceitação (parte 3)', () => {
     );
   });
 
+  it('C09: CEP de Balsas libera rua e bairro para digitar', () => {
+    const balsas = {
+      cep: '65800-000',
+      logradouro: '',
+      complemento: '',
+      bairro: '',
+      localidade: 'Balsas',
+      uf: 'MA',
+    };
+
+    expect(precisaPreencherEnderecoManualmente(balsas)).toBe(true);
+  });
+
+  it('C10: CEP de São Paulo é recusado', () => {
+    const erros = validarCidadeEUf('São Paulo', 'SP');
+
+    expect(erros.cidade).toBe('Entregamos apenas em Balsas-MA');
+  });
+
   it('C12: CEP com 5 dígitos é recusado', () => {
     expect(validarCep('12345')).toBe('O CEP deve ter 8 dígitos');
+  });
+
+  describe('ViaCEP simulada', () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+        it('C11: CEP inexistente (erro "true") vira "CEP não encontrado"', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: async () => ({ erro: 'true' }),
+        })
+      );
+
+      await expect(buscarEnderecoPorCep('99999-999')).rejects.toThrow(
+        'CEP não encontrado'
+      );
+    });
+
+    it('C12: CEP com 5 dígitos não chama a API', async () => {
+      const fetchSimulado = vi.fn();
+      vi.stubGlobal('fetch', fetchSimulado);
+
+      await expect(buscarEnderecoPorCep('12345')).rejects.toThrow(
+        'O CEP deve ter 8 dígitos'
+      );
+      expect(fetchSimulado).not.toHaveBeenCalled();
+    });
   });
 });
