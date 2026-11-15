@@ -2,16 +2,16 @@
 
 Loja online da Cantina do Campus com entrega em Balsas-MA: cardápio com adicionais, carrinho, checkout em 4 etapas, endereço por CEP, acompanhamento do pedido e histórico para pedir de novo.
 
-**Aplicação publicada:** (link)
+**Aplicação publicada:** https://cantina-do-campus-delivery.vercel.app
 **Tema:** C
 
 ## Equipe
 
 | Integrante | Responsável por |
 |---|---|
-| Integrante 1 | Estrutura, rotas, layout, cardápio e serviços do cardápio e da ViaCEP |
+| Thierry | Estrutura, rotas, layout, cardápio e serviços do cardápio e da ViaCEP |
 | Erika | Detalhe do produto, adicionais, carrinho com Context e reducer |
-| Integrante 3 | Checkout em 4 etapas, validação, regras de entrega e pagamento |
+| Maicon | Checkout em 4 etapas, validação, regras de entrega e pagamento |
 | Emilly Fernandes | Envio do pedido, Context dos pedidos, acompanhamento, cancelamento, histórico e pedir de novo |
 
 ## Como rodar
