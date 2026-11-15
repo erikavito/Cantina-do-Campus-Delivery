@@ -1,6 +1,6 @@
 import { Carrinho } from '../paginas/Carrinho';
 import { Checkout } from '../paginas/Checkout';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import { LayoutPrincipal } from '../layout/LayoutPrincipal';
 import { PaginaNaoEncontrada } from '../paginas/PaginaNaoEncontrada';
 import { Cardapio } from '../paginas/Cardapio';
@@ -9,7 +9,7 @@ import { MeusPedidos } from '../paginas/MeusPedidos';
 
 export function AppRotas() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route element={<LayoutPrincipal />}>
           <Route path="/" element={<Cardapio />} />
@@ -23,6 +23,6 @@ export function AppRotas() {
           />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
