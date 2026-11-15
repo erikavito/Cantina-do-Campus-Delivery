@@ -18,7 +18,7 @@ export async function buscarEnderecoPorCep(
   const cepLimpo = cep.replace(/\D/g, '');
 
   if (cepLimpo.length !== 8) {
-    throw new Error('O CEP deve conter exatamente 8 números.');
+      throw new Error('O CEP deve ter 8 dígitos');
   }
 
   const resposta = await fetch(

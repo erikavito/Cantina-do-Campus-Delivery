@@ -1,0 +1,174 @@
+.pagina-checkout {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+/* Indicador de etapas */
+.etapas {
+  display: flex;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 1rem 0 1.5rem;
+  padding: 0;
+}
+.etapa {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  background: #eef2ee;
+  color: #5b6b5f;
+  font-size: 0.9rem;
+}
+.etapa-numero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: #c9d6cc;
+  font-weight: 700;
+}
+.etapa-atual { background: #276749; color: #fff; }
+.etapa-atual .etapa-numero { background: #fff; color: #276749; }
+.etapa-concluida { background: #d6e8dc; color: #1b4d33; }
+.etapa-concluida .etapa-numero { background: #276749; color: #fff; }
+
+.titulo-etapa { margin: 0 0 1rem; color: #1b4d33; outline: none; }
+
+/* Campos */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+.campo label { font-weight: 600; }
+.campo input,
+.campo select {
+  padding: 0.6rem 0.7rem;
+  border: 1px solid #b8c4bb;
+  border-radius: 8px;
+  font: inherit;
+  background: #fff;
+}
+.campo input:focus,
+.campo select:focus {
+  outline: 2px solid #276749;
+  outline-offset: 1px;
+}
+.campo-opcional { font-weight: 400; color: #6b7a6f; }
+.campo-ajuda { margin: 0; font-size: 0.85rem; color: #5b6b5f; }
+.campo-erro { margin: 0; font-size: 0.85rem; color: #b42318; font-weight: 600; }
+
+.campos-linha {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0 1rem;
+}
+
+/* Opções (entrega, pagamento) */
+.grupo-opcoes {
+  border: 1px solid #d5ddd7;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin: 0 0 1rem;
+}
+.grupo-opcoes legend { font-weight: 700; padding: 0 0.4rem; }
+.opcao {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+  cursor: pointer;
+}
+
+/* Avisos */
+.aviso { margin: 0.75rem 0; color: #3d4a41; }
+.aviso-atencao {
+  padding: 0.6rem 0.8rem;
+  border-left: 4px solid #b7791f;
+  background: #fff6e0;
+  border-radius: 4px;
+}
+.aviso-erro {
+  padding: 0.6rem 0.8rem;
+  border-left: 4px solid #b42318;
+  background: #fdecea;
+  color: #b42318;
+  border-radius: 4px;
+}
+
+/* Botões */
+.acoes-checkout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.botao-secundario {
+  padding: 0.65rem 1.1rem;
+  border: 1px solid #276749;
+  border-radius: 8px;
+  background: transparent;
+  color: #276749;
+  font-weight: 700;
+  cursor: pointer;
+}
+.link-voltar { color: #276749; font-weight: 600; }
+
+@media (max-width: 520px) {
+  .etapa-nome { display: none; }
+}
+
+.troco-calculado {
+  margin: 0.25rem 0 1rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: #d6e8dc;
+  color: #1b4d33;
+}
+/* Resumo de valores (Subtotal, Desconto, Taxa, Total) */
+.pagina-checkout dl {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d5ddd7;
+  border-radius: 8px;
+  background: #fff;
+}
+.pagina-checkout dl > div,
+.pagina-checkout dl > dt,
+.pagina-checkout dl > dd {
+  margin: 0;
+}
+.pagina-checkout dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.3rem 0;
+}
+.pagina-checkout dt {
+  color: #3d4a41;
+}
+.pagina-checkout dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+}
+.resumo-total {
+  margin-top: 0.4rem;
+  padding-top: 0.6rem !important;
+  border-top: 2px solid #276749;
+  font-size: 1.1rem;
+  color: #1b4d33;
+}
+.resumo-total dt,
+.resumo-total dd {
+  color: #1b4d33;
+  font-weight: 700;
+}

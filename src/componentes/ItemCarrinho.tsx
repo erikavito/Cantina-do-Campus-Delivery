@@ -56,7 +56,7 @@ export function ItemCarrinho({
       </p>
 
       <p>
-        **Total deste item:** {formatarPreco(totalLinha)}
+      <strong>Total deste item:</strong> {formatarPreco(totalLinha)}
       </p>
 
       <div className="controles-quantidade">
@@ -88,6 +88,7 @@ export function ItemCarrinho({
 
         <button
           type="button"
+          className="botao-remover"
           onClick={() => removerItem(indice)}
           aria-label={`Remover ${produto.nome} do carrinho`}
         >
