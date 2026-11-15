@@ -1,32 +1,46 @@
-# React + TypeScript + Vite
+# Cantina do Campus Delivery
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Loja online da Cantina do Campus com entrega em Balsas-MA: cardápio com adicionais, carrinho, checkout em 4 etapas, endereço por CEP, acompanhamento do pedido e histórico para pedir de novo.
 
-Currently, two official plugins are available:
+**Aplicação publicada:** (link)
+**Tema:** C
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Equipe
 
-## React Compiler
+| Integrante | Responsável por |
+|---|---|
+| Integrante 1 | Estrutura, rotas, layout, cardápio e serviços do cardápio e da ViaCEP |
+| Erika | Detalhe do produto, adicionais, carrinho com Context e reducer |
+| Integrante 3 | Checkout em 4 etapas, validação, regras de entrega e pagamento |
+| Emilly Fernandes | Envio do pedido, Context dos pedidos, acompanhamento, cancelamento, histórico e pedir de novo |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Como rodar
 
-## Expanding the Oxlint configuration
+    npm install
+    npm run dev
+    npm test
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Telas
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+- `/` Cardápio
+- `/carrinho` Carrinho
+- `/checkout` Checkout
+- `/pedidos` Meus pedidos
+- `/pedidos/:numero` Acompanhamento
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Regras de negócio
+
+- Carrinho (C2, C3): `src/dominio/carrinhoReducer.ts`
+- Checkout, combo, Pix, entrega e troco (C4 a C6): `src/dominio/checkout.ts`
+- Situação e cancelamento do pedido (C7): `src/dominio/pedido.ts`
+- Pedir de novo (C8): `src/dominio/pedirDeNovo.ts`
+
+75 testes em Vitest.
+
+## Decisões técnicas
+
+Regras em funções puras em `src/dominio`, testadas com Vitest. Estado compartilhado com Context (carrinho com useReducer). Dados persistidos no localStorage com leitura defensiva. A situação do pedido é calculada a partir da hora de recebimento, para não se perder ao recarregar.
+
+## Créditos
+
+Endereços: API ViaCEP (viacep.com.br).
