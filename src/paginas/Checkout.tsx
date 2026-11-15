@@ -1,6 +1,6 @@
+
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
 import type { ItemCardapio } from '../tipos';
 import { useCarrinho } from '../contexto/CarrinhoContext';
 import { usePedidos } from '../contexto/PedidosContext';
@@ -8,6 +8,7 @@ import { calcularResumoCarrinho } from '../dominio/carrinhoReducer';
 import {
   DADOS_INICIAIS,
   NOMES_ETAPAS,
+  calcularDescontoCombo,
   calcularValores,
   cidadeEhBalsas,
   etapaDoCampo,
@@ -24,7 +25,6 @@ import { apenasDigitos } from '../dominio/mascaras';
 import { buscarCardapio } from '../servicos/cardapio';
 import { enviarPedido } from '../servicos/pedidos';
 import { buscarEnderecoPorCep } from '../servicos/viacep';
-
 import { Carregando } from '../componentes/Carregando';
 import { Erro } from '../componentes/Erro';
 import { EstadoVazio } from '../componentes/EstadoVazio';
@@ -34,7 +34,6 @@ import { EtapaEntrega } from '../componentes/checkout/EtapaEntrega';
 import { EtapaPagamento } from '../componentes/checkout/EtapaPagamento';
 import { EtapaRevisao } from '../componentes/checkout/EtapaRevisao';
 import type { AlterarCampo } from '../componentes/checkout/tiposEtapa';
-
 import './Checkout.css';
 
 const ULTIMA_ETAPA = NOMES_ETAPAS.length - 1;
@@ -48,13 +47,13 @@ export function Checkout() {
   const [carregando, setCarregando] = useState(true);
   const [erroCatalogo, setErroCatalogo] = useState('');
   const [tentativa, setTentativa] = useState(0);
-
   const [etapa, setEtapa] = useState(0);
   const [dados, setDados] = useState<DadosCheckout>(DADOS_INICIAIS);
   const [erros, setErros] = useState<ErrosCheckout>({});
-  const [foco, setFoco] = useState<{ campo: CampoCheckout; n: number } | null>(
-    null
-  );
+  const [foco, setFoco] = useState<{
+    campo: CampoCheckout;
+    n: number;
+  } | null>(null);
 
   const [buscandoCep, setBuscandoCep] = useState(false);
   const [avisoCep, setAvisoCep] = useState('');
@@ -62,7 +61,6 @@ export function Checkout() {
 
   const [enviando, setEnviando] = useState(false);
   const [erroEnvio, setErroEnvio] = useState('');
-
   const tituloEtapa = useRef<HTMLHeadingElement>(null);
   const jaMontou = useRef(false);
 
@@ -90,7 +88,6 @@ export function Checkout() {
     };
   }, [tentativa]);
 
-  // Ao trocar de etapa, o leitor de tela e o teclado vão para o título dela.
   useEffect(() => {
     if (!jaMontou.current) {
       jaMontou.current = true;
@@ -100,7 +97,6 @@ export function Checkout() {
     tituloEtapa.current?.focus();
   }, [etapa]);
 
-  // Foco no primeiro campo com erro (roda depois do foco no título).
   useEffect(() => {
     if (foco) {
       document.getElementById(`campo-${foco.campo}`)?.focus();
@@ -112,9 +108,25 @@ export function Checkout() {
     [linhas, catalogo]
   );
 
+  const descontoCombo = useMemo(
+    () => calcularDescontoCombo(linhas, catalogo),
+    [linhas, catalogo]
+  );
+
   const resumo = useMemo(
-    () => calcularValores(subtotal, dados.tipoEntrega, dados.pagamento),
-    [subtotal, dados.tipoEntrega, dados.pagamento]
+    () =>
+      calcularValores(
+        subtotal,
+        dados.tipoEntrega,
+        dados.pagamento,
+        descontoCombo
+      ),
+    [
+      subtotal,
+      dados.tipoEntrega,
+      dados.pagamento,
+      descontoCombo,
+    ]
   );
 
   const itensInvalidos = useMemo(() => {
@@ -161,7 +173,6 @@ export function Checkout() {
     try {
       const endereco = await buscarEnderecoPorCep(digitos);
 
-      // A pessoa mudou o CEP enquanto buscávamos: ignora esta resposta.
       if (ultimoCep.current !== digitos) return;
 
       setDados((atual) => ({
@@ -175,13 +186,17 @@ export function Checkout() {
 
       setErros((atuais) => {
         const proximos = { ...atuais };
+
         delete proximos.cep;
         delete proximos.rua;
         delete proximos.bairro;
         delete proximos.cidade;
         delete proximos.uf;
 
-        if (!cidadeEhBalsas(endereco.localidade) || endereco.uf !== 'MA') {
+        if (
+          !cidadeEhBalsas(endereco.localidade) ||
+          endereco.uf !== 'MA'
+        ) {
           Object.assign(
             proximos,
             validarCidadeEUf(endereco.localidade, endereco.uf)
@@ -195,16 +210,25 @@ export function Checkout() {
 
       setAvisoCep(
         `${
-          erro instanceof Error ? erro.message : 'Não foi possível buscar o CEP.'
+          erro instanceof Error
+            ? erro.message
+            : 'Não foi possível buscar o CEP.'
         } Preencha o endereço manualmente.`
       );
     } finally {
-      if (ultimoCep.current === digitos) setBuscandoCep(false);
+      if (ultimoCep.current === digitos) {
+        setBuscandoCep(false);
+      }
     }
   }
 
   function avancar() {
-    const errosEtapa = validarEtapa(etapa, dados, subtotal);
+    const errosEtapa = validarEtapa(
+      etapa,
+      dados,
+      subtotal,
+      descontoCombo
+    );
 
     if (Object.keys(errosEtapa).length > 0) {
       setErros(errosEtapa);
@@ -222,7 +246,12 @@ export function Checkout() {
   }
 
   async function confirmar() {
-    const errosTodos = validarTudo(dados, subtotal);
+    const errosTodos = validarTudo(
+      dados,
+      subtotal,
+      descontoCombo
+    );
+
     const primeiro = primeiroCampoComErro(errosTodos);
 
     if (primeiro) {
@@ -249,6 +278,7 @@ export function Checkout() {
           ? erro.message
           : 'Não foi possível enviar o pedido. Tente de novo.'
       );
+
       setEnviando(false);
     }
   }
@@ -258,7 +288,12 @@ export function Checkout() {
   }
 
   if (erroCatalogo) {
-    return <Erro mensagem={erroCatalogo} aoTentarNovamente={recarregarCatalogo} />;
+    return (
+      <Erro
+        mensagem={erroCatalogo}
+        aoTentarNovamente={recarregarCatalogo}
+      />
+    );
   }
 
   if (linhas.length === 0) {
@@ -297,6 +332,7 @@ export function Checkout() {
         noValidate
         onSubmit={(evento) => {
           evento.preventDefault();
+
           if (ehUltima) {
             void confirmar();
           } else {
@@ -305,7 +341,8 @@ export function Checkout() {
         }}
       >
         <h3 ref={tituloEtapa} tabIndex={-1} className="titulo-etapa">
-          Etapa {etapa + 1} de {NOMES_ETAPAS.length}: {NOMES_ETAPAS[etapa]}
+          Etapa {etapa + 1} de {NOMES_ETAPAS.length}:{' '}
+          {NOMES_ETAPAS[etapa]}
         </h3>
 
         {quantidadeErros > 0 && (
@@ -317,7 +354,11 @@ export function Checkout() {
         )}
 
         {etapa === 0 && (
-          <EtapaDados dados={dados} erros={erros} aoAlterar={alterar} />
+          <EtapaDados
+            dados={dados}
+            erros={erros}
+            aoAlterar={alterar}
+          />
         )}
 
         {etapa === 1 && (
@@ -325,7 +366,7 @@ export function Checkout() {
             dados={dados}
             erros={erros}
             aoAlterar={alterar}
-            subtotal={subtotal}
+            subtotal={subtotal - descontoCombo}
             aoAlterarCep={(cep) => void alterarCep(cep)}
             buscandoCep={buscandoCep}
             avisoCep={avisoCep}

@@ -1,6 +1,8 @@
+
 import type {
   Endereco,
   FormaPagamento,
+  ItemCardapio,
   LinhaCarrinho,
   ResumoValores,
   TipoEntrega,
@@ -9,26 +11,17 @@ import type { NovoPedido } from '../servicos/pedidos';
 import { formatarPreco } from '../servicos/formatacao';
 import { apenasDigitos, reaisParaCentavos } from './mascaras';
 
-/* ------------------------------------------------------------------ */
-/* Regras do negócio                                                   */
-/* ATENÇÃO: confira estes valores com o enunciado da atividade.        */
-/* ------------------------------------------------------------------ */
+/* Regras do negócio */
 
 export const CIDADE_ATENDIDA = 'Balsas';
 export const UF_ATENDIDA = 'MA';
 
-/** Pedido mínimo para ENTREGA, em centavos (retirada não tem mínimo). */
 export const PEDIDO_MINIMO_ENTREGA = 1500;
-
-/** Taxa de entrega, em centavos. */
 export const TAXA_ENTREGA = 500;
-
-/** Desconto para pagamento no Pix, em porcentagem do subtotal. */
 export const DESCONTO_PIX_PERCENTUAL = 5;
+export const FRETE_GRATIS_A_PARTIR_DE = 5000;
 
-/* ------------------------------------------------------------------ */
-/* Dados do formulário                                                 */
-/* ------------------------------------------------------------------ */
+/* Dados do formulário */
 
 export type CampoCheckout =
   | 'nomeCliente'
@@ -75,9 +68,7 @@ export const DADOS_INICIAIS: DadosCheckout = {
   trocoPara: '',
 };
 
-/* ------------------------------------------------------------------ */
-/* Etapas                                                              */
-/* ------------------------------------------------------------------ */
+/* Etapas */
 
 export const NOMES_ETAPAS = [
   'Seus dados',
@@ -86,7 +77,6 @@ export const NOMES_ETAPAS = [
   'Revisão',
 ] as const;
 
-/** Campos de cada etapa, na ordem em que aparecem na tela. */
 export const CAMPOS_POR_ETAPA: CampoCheckout[][] = [
   ['nomeCliente', 'telefone'],
   ['tipoEntrega', 'cep', 'rua', 'numero', 'bairro', 'cidade', 'uf'],
@@ -101,19 +91,14 @@ export function primeiroCampoComErro(
   const campos =
     etapa === undefined ? CAMPOS_POR_ETAPA.flat() : CAMPOS_POR_ETAPA[etapa];
 
-  return campos.find((campo) => erros[campo]) ?? null;
+  return campos?.find((campo) => erros[campo]) ?? null;
 }
 
 export function etapaDoCampo(campo: CampoCheckout): number {
   return CAMPOS_POR_ETAPA.findIndex((campos) => campos.includes(campo));
 }
 
-/* ------------------------------------------------------------------ */
-/* Valores do pedido                                                   */
-/* ------------------------------------------------------------------ */
-
-/** Frete grátis a partir deste valor em produtos, em centavos. */
-export const FRETE_GRATIS_A_PARTIR_DE = 5000;
+/* Valores do pedido */
 
 export function calcularValores(
   subtotal: number,
@@ -142,14 +127,45 @@ export function calcularValores(
   };
 }
 
-/* ------------------------------------------------------------------ */
-/* Validações                                                          */
-/* ------------------------------------------------------------------ */
+/**
+ * Calcula o desconto de combo.
+ * Cada par de salgado e bebida gera R$ 1,50 de desconto.
+ * Valores calculados em centavos.
+ */
+export function calcularDescontoCombo(
+  linhas: LinhaCarrinho[],
+  catalogo: ItemCardapio[]
+): number {
+  const produtosPorId = new Map(
+    catalogo.map((produto) => [produto.id, produto])
+  );
+
+  let quantidadeSalgados = 0;
+  let quantidadeBebidas = 0;
+
+  for (const linha of linhas) {
+    const produto = produtosPorId.get(linha.itemId);
+
+    if (!produto || linha.quantidade <= 0) continue;
+
+    if (produto.categoria === 'salgado') {
+      quantidadeSalgados += linha.quantidade;
+    }
+
+    if (produto.categoria === 'bebida') {
+      quantidadeBebidas += linha.quantidade;
+    }
+  }
+
+  return Math.min(quantidadeSalgados, quantidadeBebidas) * 150;
+}
+
+/* Validações */
 
 function semAcento(texto: string): string {
   return texto
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .trim()
     .toLowerCase();
 }
@@ -178,7 +194,6 @@ export function validarCep(cep: string): string | null {
     : 'O CEP deve ter 8 dígitos';
 }
 
-/** Só entregamos em Balsas, MA. */
 export function validarCidadeEUf(
   cidade: string,
   uf: string
@@ -212,16 +227,18 @@ export function validarDadosPessoais(dados: DadosCheckout): ErrosCheckout {
   return erros;
 }
 
-/** Retirada não tem regras; entrega exige mínimo e endereço em Balsas. */
+/** Retirada não tem mínimo; entrega exige mínimo e endereço em Balsas. */
 export function validarEntrega(
   dados: DadosCheckout,
-  subtotal: number
+  subtotal: number,
+  descontoCombo = 0
 ): ErrosCheckout {
   if (dados.tipoEntrega === 'retirada') return {};
 
   const erros: ErrosCheckout = {};
+  const valorProdutos = subtotal - descontoCombo;
 
-  if (subtotal < PEDIDO_MINIMO_ENTREGA) {
+  if (valorProdutos < PEDIDO_MINIMO_ENTREGA) {
     erros.tipoEntrega = `Pedido mínimo para entrega: ${formatarPreco(
       PEDIDO_MINIMO_ENTREGA
     )}`;
@@ -239,7 +256,7 @@ export function validarEntrega(
   return erros;
 }
 
-/** No dinheiro, "Troco para quanto?" é obrigatório e precisa cobrir o total. */
+/** No dinheiro, o troco precisa cobrir o total do pedido. */
 export function validarPagamento(
   dados: DadosCheckout,
   total: number
@@ -268,42 +285,50 @@ export function validarPagamento(
   return erros;
 }
 
-/** Valida só os campos da etapa informada. */
+/** Valida somente os campos da etapa informada. */
 export function validarEtapa(
   etapa: number,
   dados: DadosCheckout,
-  subtotal: number
+  subtotal: number,
+  descontoCombo = 0
 ): ErrosCheckout {
   switch (etapa) {
     case 0:
       return validarDadosPessoais(dados);
+
     case 1:
-      return validarEntrega(dados, subtotal);
+      return validarEntrega(dados, subtotal, descontoCombo);
+
     case 2:
       return validarPagamento(
         dados,
-        calcularValores(subtotal, dados.tipoEntrega, dados.pagamento).total
+        calcularValores(
+          subtotal,
+          dados.tipoEntrega,
+          dados.pagamento,
+          descontoCombo
+        ).total
       );
+
     default:
       return {};
   }
 }
 
-/** Valida todas as etapas de uma vez (usado ao confirmar o pedido). */
+/** Valida todas as etapas antes de confirmar o pedido. */
 export function validarTudo(
   dados: DadosCheckout,
-  subtotal: number
+  subtotal: number,
+  descontoCombo = 0
 ): ErrosCheckout {
   return {
-    ...validarEtapa(0, dados, subtotal),
-    ...validarEtapa(1, dados, subtotal),
-    ...validarEtapa(2, dados, subtotal),
+    ...validarEtapa(0, dados, subtotal, descontoCombo),
+    ...validarEtapa(1, dados, subtotal, descontoCombo),
+    ...validarEtapa(2, dados, subtotal, descontoCombo),
   };
 }
 
-/* ------------------------------------------------------------------ */
-/* Montagem do pedido                                                  */
-/* ------------------------------------------------------------------ */
+/* Montagem do pedido */
 
 export function montarNovoPedido(
   dados: DadosCheckout,
@@ -328,7 +353,9 @@ export function montarNovoPedido(
       : null;
 
   const trocoPara =
-    dados.pagamento === 'dinheiro' ? reaisParaCentavos(dados.trocoPara) : null;
+    dados.pagamento === 'dinheiro'
+      ? reaisParaCentavos(dados.trocoPara)
+      : null;
 
   return {
     nomeCliente: dados.nomeCliente.trim(),
