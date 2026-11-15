@@ -9,10 +9,10 @@ Loja online da Cantina do Campus com entrega em Balsas-MA: cardápio com adicion
 
 | Integrante | Responsável por |
 |---|---|
-| Thierry | Estrutura, rotas, layout, cardápio e serviços do cardápio e da ViaCEP |
-| Erika | Detalhe do produto, adicionais, carrinho com Context e reducer |
+| Erika | Estrutura, rotas, layout, cardápio e serviços do cardápio e da ViaCEP |
+| Thierry  | Detalhe do produto, adicionais, carrinho com Context e reducer |
 | Maicon | Checkout em 4 etapas, validação, regras de entrega e pagamento |
-| Emilly Fernandes | Envio do pedido, Context dos pedidos, acompanhamento, cancelamento, histórico e pedir de novo |
+| Emilly | Envio do pedido, Context dos pedidos, acompanhamento, cancelamento, histórico e pedir de novo |
 
 ## Como rodar
 
