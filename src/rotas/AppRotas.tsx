@@ -1,4 +1,5 @@
 import { Carrinho } from '../paginas/Carrinho';
+import { Checkout } from '../paginas/Checkout';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { LayoutPrincipal } from '../layout/LayoutPrincipal';
 import { PaginaNaoEncontrada } from '../paginas/PaginaNaoEncontrada';
@@ -13,6 +14,7 @@ export function AppRotas() {
         <Route element={<LayoutPrincipal />}>
           <Route path="/" element={<Cardapio />} />
           <Route path="/carrinho" element={<Carrinho />} />
+          <Route path="/checkout" element={<Checkout />} />
           <Route path="/pedidos" element={<MeusPedidos />} />
           <Route path="/pedidos/:numero" element={<Acompanhamento />} />
           <Route
